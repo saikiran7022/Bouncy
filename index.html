@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Bouncy Bros — A Bouncy Tales × Mario Adventure</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="game" width="960" height="540"></canvas>
+
+    <!-- Heads up display -->
+    <div id="hud" class="hidden">
+      <div class="hud-item">🪙 <span id="hud-coins">0</span></div>
+      <div class="hud-item">❤️ <span id="hud-lives">3</span></div>
+      <div class="hud-item">⭐ <span id="hud-score">0</span></div>
+      <div class="hud-item">🏁 <span id="hud-level">1</span></div>
+    </div>
+
+    <!-- Title / menu overlay -->
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <h1>BOUNCY&nbsp;BROS</h1>
+        <p class="tag">a <b>Bouncy&nbsp;Tales</b> × <b>Mario</b> adventure</p>
+        <p class="how">
+          You bounce <b>automatically</b> — steer your hops, stomp foes,
+          grab coins, and reach the&nbsp;🚩.
+        </p>
+        <div class="keys">
+          <span>◀ ▶ / A&nbsp;D — steer</span>
+          <span>SPACE / ▲ / W — extra jump</span>
+          <span>P — pause</span>
+        </div>
+        <button id="start-btn">▶ PLAY</button>
+        <p class="touchhint">On mobile, use the on-screen pads.</p>
+      </div>
+    </div>
+
+    <!-- Messages (level clear / game over) -->
+    <div id="message" class="overlay hidden">
+      <div class="panel">
+        <h2 id="msg-title">Level Clear!</h2>
+        <p id="msg-body"></p>
+        <button id="msg-btn">Continue</button>
+      </div>
+    </div>
+
+    <!-- Touch controls -->
+    <div id="touch" class="hidden">
+      <div class="pad left">
+        <button class="tbtn" data-key="left">◀</button>
+        <button class="tbtn" data-key="right">▶</button>
+      </div>
+      <div class="pad right">
+        <button class="tbtn jump" data-key="jump">⤒</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
