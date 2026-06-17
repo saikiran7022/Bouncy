@@ -24,8 +24,10 @@ python3 -m http.server 8000
 | Action | Keys |
 | --- | --- |
 | Steer left / right | `←` `→` or `A` `D` |
-| Extra (boosted) jump | `Space`, `↑`, or `W` |
+| Jump (tap again mid-air = double-jump) | `Space`, `↑`, or `W` |
 | Pause | `P` |
+| Mute sound | `M` |
+| Restart level | `R` |
 | Start | `Enter` / **PLAY** button |
 
 On touch devices, on-screen pads appear automatically.
@@ -34,27 +36,43 @@ On touch devices, on-screen pads appear automatically.
 
 - **You bounce on your own.** Every landing springs you back up — like
   Bouncy Tales. Your job is to *aim* the bounces with left/right and use
-  the boosted jump to clear bigger gaps.
-- **Stomp enemies** from above (Mario-style) to pop them; touching them
-  from the side costs a life.
+  the boosted jump (and mid-air double-jump) to clear bigger gaps.
+- **Chain stomps** for a **combo multiplier** — each enemy popped within
+  the window is worth more, with floating score popups.
+- **Grab power-ups**: 🛡️ **shield** blocks one hit, ⭐ **star** makes you
+  briefly invincible (run straight through enemies).
+- **Use the gadgets**: 🎪 **bounce pads** fling you sky-high, and **moving
+  platforms** ferry you across.
+- **Hit checkpoints** (🚩 mid-level flags) so a stumble doesn't send you
+  back to the start.
 - **Grab coins** and smack `?` blocks from below to pop bonus coins.
-- **Avoid spikes and pits.**
-- **Reach the 🚩** to clear the level. Clear all three to win.
+- **Reach the goal 🏁** to clear the level. Clear all three to win — and
+  beat your **best score & time** (saved locally).
+
+## ✨ Game feel
+
+Procedural **WebAudio** sound effects + looping music (no audio files),
+hit-stop on impacts, screen shake & flash, squash-and-stretch, particle
+bursts, parallax backgrounds, ambient particles, and a camera that looks
+ahead in the direction you're moving.
 
 ## 🗺️ Levels
 
-1. **Green Hills** — a gentle intro to bouncing.
-2. **Cloud Climb** — floating platforms and flyers.
-3. **Spike Caverns** — tight hops over spike fields.
+1. **Sunny Meadows** — a gentle intro to bouncing.
+2. **Cloud Kingdom** — floating/moving platforms and flyers.
+3. **Crystal Caverns** — tight hops over spike fields.
 
-Levels are simple ASCII maps in `game.js` (`LEVELS`), so adding new ones
-is easy — each character is a tile (`#` ground, `=` platform, `o` coin,
-`?` block, `E`/`F` enemies, `^` spikes, `P` spawn, `G` goal).
+Levels are defined as structured specs on a **tile grid** in `game.js`
+(`SPECS`) and compiled by `compile()`. Every pit is guaranteed ≤ 3 tiles
+(always jumpable) and coin trails arc over each gap to show the path, so
+adding a balanced level is just data — `gaps`, `platforms`, `coins`,
+`blocks`, `walkers`/`flyers`, `spikes`, `springs`, `movers`,
+`checkpoints`, `powerups`, plus `spawn`/`goal`.
 
 ## 📁 Files
 
-- `index.html` — markup, HUD, overlays, touch pads
+- `index.html` — markup, HUD, overlays, pause menu, touch pads
 - `style.css` — layout, theming, responsive letterboxing
-- `game.js` — the whole engine (input, physics, levels, rendering)
+- `game.js` — the whole engine (audio, input, physics, levels, rendering)
 
 Have fun bouncing! 🟥
