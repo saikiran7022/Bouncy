@@ -15,7 +15,14 @@
       <div class="hud-item">🪙 <span id="hud-coins">0</span></div>
       <div class="hud-item">❤️ <span id="hud-lives">3</span></div>
       <div class="hud-item">⭐ <span id="hud-score">0</span></div>
+      <div class="hud-item">⏱️ <span id="hud-time">0:00</span></div>
       <div class="hud-item">🏁 <span id="hud-level">1</span></div>
+    </div>
+
+    <!-- Top-right buttons -->
+    <div id="topbtns" class="hidden">
+      <button class="iconbtn" id="mute-btn" title="Sound (M)">🔊</button>
+      <button class="iconbtn" id="pause-btn" title="Pause (P)">⏸</button>
     </div>
 
     <!-- Title / menu overlay -->
@@ -25,13 +32,21 @@
         <p class="tag">a <b>Bouncy&nbsp;Tales</b> × <b>Mario</b> adventure</p>
         <p class="how">
           You bounce <b>automatically</b> — just steer your hops! Follow the
-          <b>coin trails</b> over gaps, stomp foes, and reach the&nbsp;🚩.
+          <b>coin&nbsp;trails</b> over gaps, chain <b>stomps</b> for combos,
+          grab <b>power-ups</b>, and reach the&nbsp;🚩.
         </p>
+        <div class="legend">
+          <span>🛡️ shield — blocks one hit</span>
+          <span>⭐ star — go invincible</span>
+          <span>🎪 pad — super-bounce</span>
+          <span>🚩 flag — checkpoint</span>
+        </div>
         <div class="keys">
           <span>◀ ▶ / A&nbsp;D — steer</span>
-          <span>SPACE / ▲ / W — big jump &nbsp;(tap again in air = double-jump)</span>
-          <span>P — pause</span>
+          <span>SPACE / ▲ / W — jump &nbsp;(tap again mid-air = double-jump)</span>
+          <span>P — pause &nbsp;·&nbsp; M — mute &nbsp;·&nbsp; R — restart level</span>
         </div>
+        <p class="best" id="title-best"></p>
         <button id="start-btn">▶ PLAY</button>
         <p class="touchhint">On mobile, use the on-screen pads.</p>
       </div>
@@ -43,6 +58,16 @@
         <h2 id="msg-title">Level Clear!</h2>
         <p id="msg-body"></p>
         <button id="msg-btn">Continue</button>
+      </div>
+    </div>
+
+    <!-- Pause menu -->
+    <div id="pausemenu" class="overlay hidden">
+      <div class="panel">
+        <h2>Paused</h2>
+        <button id="resume-btn">Resume</button>
+        <button id="restart-btn" class="secondary">↻ Restart Level</button>
+        <button id="quit-btn" class="secondary">⌂ Main Menu</button>
       </div>
     </div>
 
