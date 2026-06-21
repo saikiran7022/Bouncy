@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swing Trading 101 — Your Personal Course</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --ink:#e6edf3; --muted:#9aa7b4;
+    --line:#2a3240; --green:#3fb950; --red:#f85149; --accent:#58a6ff; --gold:#e3b341;
+    --green-dim:#1f3d28; --red-dim:#3d1f22;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px 120px}
+  header.hero{padding:54px 18px 30px;text-align:center;background:radial-gradient(900px 380px at 50% -10%,rgba(88,166,255,.14),transparent)}
+  header.hero h1{font-size:2.1rem;margin:.2em 0 .1em;letter-spacing:-.5px}
+  header.hero p{color:var(--muted);max-width:620px;margin:8px auto;font-size:1.02rem}
+  .badge{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:4px 12px;border-radius:999px;font-size:.8rem;margin-top:8px}
+  /* progress */
+  #progressbar{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--accent),var(--green));z-index:50;transition:width .15s}
+  /* sticky toc */
+  nav.toc{position:sticky;top:0;background:rgba(13,17,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:40;padding:8px 0;margin-bottom:26px}
+  nav.toc .inner{max-width:880px;margin:0 auto;padding:0 12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+  nav.toc a{flex:0 0 auto;font-size:.82rem;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px;white-space:nowrap}
+  nav.toc a:hover{background:var(--panel2);color:var(--ink)}
+  section.lesson{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 24px;margin:26px 0;scroll-margin-top:64px}
+  .lnum{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#1f6feb);color:#fff;font-weight:700;margin-right:10px;font-size:.95rem}
+  h2{font-size:1.5rem;margin:.1em 0 .6em;display:flex;align-items:center;letter-spacing:-.3px}
+  h3{font-size:1.12rem;margin:1.4em 0 .4em;color:#fff}
+  p,li{color:var(--ink)}
+  .muted{color:var(--muted)}
+  .key{background:var(--panel2);border-left:3px solid var(--gold);padding:12px 16px;border-radius:8px;margin:16px 0}
+  .key b{color:var(--gold)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.94rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+  th{background:var(--panel2);color:var(--muted);font-weight:600}
+  .g{color:var(--green);font-weight:600}.r{color:var(--red);font-weight:600}
+  code{background:var(--panel2);padding:2px 6px;border-radius:5px;font-size:.92em;color:#ffd9a8}
+  .formula{background:#06223a;border:1px solid #1f4f7a;border-radius:10px;padding:14px 16px;text-align:center;font-size:1.05rem;margin:14px 0}
+  figure{margin:18px 0;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}
+  figcaption{color:var(--muted);font-size:.85rem;text-align:center;margin-top:8px}
+  svg{display:block;width:100%;height:auto}
+  /* quiz */
+  .quiz{background:linear-gradient(180deg,#13203a,#11192b);border:1px solid #25457a;border-radius:14px;padding:18px 18px;margin:22px 0}
+  .quiz .q{font-weight:700;margin-bottom:4px;color:#cfe2ff}
+  .quiz .tag{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:11px 14px;border-radius:9px;margin:8px 0;cursor:pointer;font-size:.95rem;transition:.12s}
+  .opt:hover{border-color:var(--accent)}
+  .opt.correct{background:var(--green-dim);border-color:var(--green)}
+  .opt.wrong{background:var(--red-dim);border-color:var(--red)}
+  .opt:disabled{cursor:default}
+  .feedback{margin-top:10px;font-size:.92rem;padding:10px 12px;border-radius:8px;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--green-dim);border:1px solid var(--green)}
+  .feedback.no{background:var(--red-dim);border:1px solid var(--red)}
+  /* calculator */
+  .calc{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .calc .row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}
+  .calc label{flex:1 1 150px;font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+  .calc input{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 10px;font-size:1rem}
+  .calc .out{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:14px;margin-top:8px;font-size:.95rem}
+  .calc .out b{color:var(--accent)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.78rem;font-weight:600}
+  .pill.green{background:var(--green-dim);color:var(--green)}
+  .pill.red{background:var(--red-dim);color:var(--red)}
+  .pill.gold{background:#3a2f12;color:var(--gold)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);justify-content:center;margin-top:6px}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .disclaimer{font-size:.82rem;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:14px;margin-top:30px}
+  .done{text-align:center;padding:30px;background:radial-gradient(600px 200px at 50% 0,rgba(63,185,80,.12),transparent)}
+  ul.clean{list-style:none;padding-left:0}
+  ul.clean li{padding:6px 0 6px 26px;position:relative}
+  ul.clean li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:620px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="progressbar"></div>
+
+<header class="hero">
+  <h1>📈 Swing Trading 101</h1>
+  <p>A plain-English course built around <b>your</b> plan — strong stocks, smart entries, controlled risk. Every chart below uses <b>real market data</b> we pulled together (week of June 15–18, 2026).</p>
+  <div class="badge">Tailored for you: brand new · under $5k · 1% risk per trade · checks ~hourly</div>
+</header>
+
+<nav class="toc"><div class="inner">
+  <a href="#l1">1 · Big picture</a>
+  <a href="#l2">2 · 5 Pillars</a>
+  <a href="#l3">3 · Strength</a>
+  <a href="#l4">4 · Setups</a>
+  <a href="#l5">5 · Stop-loss</a>
+  <a href="#l6">6 · Reward (R)</a>
+  <a href="#l7">7 · Sizing</a>
+  <a href="#l8">8 · Full trade</a>
+  <a href="#l9">9 · Mindset</a>
+</div></nav>
+
+<div class="wrap">
+
+<!-- LESSON 1 -->
+<section class="lesson" id="l1">
+  <h2><span class="lnum">1</span> The Big Picture</h2>
+  <p>Being in the stock market comes in three "speeds." You're learning the middle one.</p>
+  <table>
+    <tr><th>Style</th><th>How long you hold</th><th>Screen time</th></tr>
+    <tr><td>Day trading</td><td>minutes–hours</td><td>All day, stressful</td></tr>
+    <tr><td><b>Swing trading</b> ⬅️ you</td><td><b>days–weeks</b></td><td>A few minutes a day</td></tr>
+    <tr><td>Investing</td><td>months–years</td><td>Barely any</td></tr>
+  </table>
+  <p>Swing trading means you try to catch <b>one "swing"</b> — one clean leg of a move up. Think of price like a staircase: it steps up, rests, steps up again. You hop on for a step or two, then hop off.</p>
+  <figure>
+    <svg viewBox="0 0 600 220" role="img" aria-label="Staircase uptrend">
+      <polyline points="20,190 90,190 90,150 170,150 170,110 250,110 250,70 330,70 330,40 410,40" fill="none" stroke="#3fb950" stroke-width="3"/>
+      <circle cx="170" cy="150" r="6" fill="#58a6ff"/><text x="180" y="145" fill="#9aa7b4" font-size="13">you hop on (a rest step)</text>
+      <circle cx="330" cy="70" r="6" fill="#e3b341"/><text x="340" y="65" fill="#9aa7b4" font-size="13">you hop off (took profit)</text>
+      <text x="20" y="210" fill="#9aa7b4" font-size="12">time →</text>
+    </svg>
+    <figcaption>Swing trading = capture one or two "steps," not the whole staircase forever.</figcaption>
+  </figure>
+  <div class="key">💡 <b>Why it fits you:</b> you do your homework in the evening, place orders that run on autopilot, and glance once during the day. No screen-staring required.</div>
+</section>
+
+<!-- LESSON 2 -->
+<section class="lesson" id="l2">
+  <h2><span class="lnum">2</span> The 5 Pillars (the whole game)</h2>
+  <p>Here's the secret: <b>every trade is just 5 questions.</b> Your entire strategy document is these five, dressed up. Learn them and you've learned trading.</p>
+  <table>
+    <tr><th>#</th><th>Question</th><th>Answer is…</th></tr>
+    <tr><td>1</td><td><b>WHAT</b> do I buy?</td><td>A strong stock going up <span class="muted">(relative strength)</span></td></tr>
+    <tr><td>2</td><td><b>WHEN</b> do I buy?</td><td>At a low-risk spot <span class="muted">(a "setup", e.g. a pullback)</span></td></tr>
+    <tr><td>3</td><td><b>WHERE</b> am I wrong?</td><td>The stop-loss — decided <i>before</i> buying</td></tr>
+    <tr><td>4</td><td><b>WHERE</b> do I take profit?</td><td>The target — must pay ≥ 2× the risk</td></tr>
+    <tr><td>5</td><td><b>HOW MUCH</b> do I buy?</td><td>A size where one loss can't hurt you</td></tr>
+  </table>
+  <div class="key">🧠 <b>The mindset shift:</b> trading is <i>not</i> about being right. It's about risk management. You can be wrong half the time and still make money — Lesson 6 proves it with numbers.</div>
+</section>
+
+<div class="quiz" data-answer="1">
+  <div class="tag">Quick check</div>
+  <div class="q">Which is the single most important idea so far?</div>
+  <button class="opt">Buying the cheapest stock you can find</button>
+  <button class="opt">You can win even when you're wrong often, if winners &gt; losers</button>
+  <button class="opt">Watching the screen all day to catch every move</button>
+  <div class="feedback"></div>
+</div>
+
+<!-- LESSON 3 -->
+<section class="lesson" id="l3">
+  <h2><span class="lnum">3</span> Trend &amp; Relative Strength — <span class="muted" style="font-size:1rem">what to buy</span></h2>
+  <p><b>Rule #1: only buy stocks going UP.</b> Beginners love buying cheap, falling stocks hoping for a bounce. Don't — swim <i>with</i> the current. An uptrend = higher highs &amp; higher lows, price above a rising average line.</p>
+  <h3>Relative Strength: buy the leaders</h3>
+  <p>Relative strength just means: <b>is this stock stronger than the overall market?</b> When the market wobbles, the strong stocks barely dip — because big money wants them. Those are the ones that fly when the market turns back up. Here's the <b>real 3-month performance</b> from our scan, vs the market (SPY +15%):</p>
+  <figure>
+    <svg id="rsChart" viewBox="0 0 600 320" aria-label="Relative strength bar chart"></svg>
+    <figcaption>Real data, ~Mar→Jun 2026. Green = leaders (crushing the market). Red = laggards (avoid).</figcaption>
+  </figure>
+  <div class="key">📌 <b>The rule:</b> Buy the <span class="g">leaders</span> (AMD, MRVL, ARM…), never the <span class="r">laggards</span> (NOW, PLTR…) — and only while they trend up. A great "story" on a falling stock is still a falling stock.</div>
+</section>
+
+<div class="quiz" data-answer="2">
+  <div class="tag">Quick check</div>
+  <div class="q">Two stocks. The market (SPY) is up 15% in 3 months. Which has relative strength?</div>
+  <button class="opt">Stock A: down 17%, sitting 21% below its high</button>
+  <button class="opt">A cheap stock under $5 that "feels due for a bounce"</button>
+  <button class="opt">Stock B: up 162%, only 4% below its high</button>
+  <div class="feedback"></div>
+</div>
+
+<!-- LESSON 4 -->
+<section class="lesson" id="l4">
+  <h2><span class="lnum">4</span> Setups — <span class="muted" style="font-size:1rem">when to buy</span></h2>
+  <p>A "setup" is a recognizable spot where <b>risk is low</b> — where the price is near a line that quickly tells you if you're wrong. All five below share one idea: <b>let the stock come to you; don't chase.</b></p>
+
+  <div class="two">
+    <figure>
+      <svg viewBox="0 0 280 160" aria-label="Pullback">
+        <polyline points="10,140 60,90 95,115 140,60 175,85 230,30" fill="none" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="95" cy="115" r="6" fill="#58a6ff"/><circle cx="175" cy="85" r="6" fill="#58a6ff"/>
+        <text x="20" y="20" fill="#fff" font-size="14" font-weight="700">1 · Pullback</text>
+      </svg>
+      <figcaption>Strong stock dips briefly → buy the dip. Stop below the dip.</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 280 160" aria-label="Base">
+        <polyline points="10,140 55,80 90,78 200,82 200,82" fill="none" stroke="#3fb950" stroke-width="3"/>
+        <rect x="88" y="68" width="115" height="28" fill="none" stroke="#9aa7b4" stroke-dasharray="4" stroke-width="1.5"/>
+        <polyline points="203,82 240,35" fill="none" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="210" cy="72" r="6" fill="#58a6ff"/>
+        <text x="20" y="20" fill="#fff" font-size="14" font-weight="700">2 · Base</text>
+      </svg>
+      <figcaption>Goes sideways (rests) → buy the break above the box.</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 280 160" aria-label="Breakout retest">
+        <line x1="10" y1="80" x2="270" y2="80" stroke="#9aa7b4" stroke-dasharray="4" stroke-width="1.5"/>
+        <polyline points="10,135 70,95 110,55 150,82 195,40" fill="none" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="150" cy="82" r="6" fill="#58a6ff"/>
+        <text x="20" y="20" fill="#fff" font-size="14" font-weight="700">3 · Breakout retest</text>
+        <text x="150" y="105" fill="#9aa7b4" font-size="11">old ceiling = new floor</text>
+      </svg>
+      <figcaption>Breaks out, dips back to touch the line → buy the retest.</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 280 160" aria-label="Higher low">
+        <polyline points="10,120 55,70 95,110 140,55 175,95 230,30" fill="none" stroke="#3fb950" stroke-width="3"/>
+        <circle cx="95" cy="110" r="5" fill="#9aa7b4"/><circle cx="175" cy="95" r="6" fill="#58a6ff"/>
+        <text x="70" y="130" fill="#9aa7b4" font-size="11">low 1</text>
+        <text x="165" y="118" fill="#9aa7b4" font-size="11">low 2 (higher)</text>
+        <text x="20" y="20" fill="#fff" font-size="14" font-weight="700">4 · Higher low</text>
+      </svg>
+      <figcaption>Each dip stops higher than the last → buyers getting eager. Buy as it turns up.</figcaption>
+    </figure>
+  </div>
+  <p class="muted"><b>5 · VWAP reclaim</b> (a bit advanced — optional for now): a stock dips below the "average price paid today" line and then climbs back above it, showing buyers retook control intraday. Good for <i>timing</i> a buy on the day.</p>
+
+  <h3>📊 The same idea on real data</h3>
+  <p>Below is <b>AMD's actual price</b>, last 12 trading days. See the dip to ~$507 (June 16–17) then the bounce — a textbook <b>higher-low / pullback</b>. And <b>PANW</b> going sideways in a tight box (~$260–288) — a textbook <b>base</b>.</p>
+  <figure>
+    <svg id="amdChart" viewBox="0 0 600 300" aria-label="AMD candlestick chart"></svg>
+    <div class="legend"><span><span class="dot" style="background:#3fb950"></span>up day</span><span><span class="dot" style="background:#f85149"></span>down day</span></div>
+    <figcaption>AMD — real daily candles, Jun 3–18 2026. The dip-and-recover = a pullback/higher-low setup.</figcaption>
+  </figure>
+  <figure>
+    <svg id="panwChart" viewBox="0 0 600 300" aria-label="PANW candlestick chart"></svg>
+    <figcaption>PANW — real daily candles. The flat range (dashed box) is a "base"; the right edge pushes the top.</figcaption>
+  </figure>
+  <div class="key">🎯 <b>The thread:</b> every setup gives you a <i>nearby, obvious "I'm wrong" line</i> — which makes the next pillar (the stop) possible. Master <b>pullback, base, higher low</b> first.</div>
+</section>
+
+<div class="quiz" data-answer="0">
+  <div class="tag">Quick check</div>
+  <div class="q">AMD ran +5% in one day on big news. Your strategy says…</div>
+  <button class="opt">Wait — don't chase. Buy on a pullback toward support</button>
+  <button class="opt">Buy immediately at the high so you don't miss out</button>
+  <button class="opt">Buy double because the news is exciting</button>
+  <div class="feedback"></div>
+</div>
+
+<!-- LESSON 5 -->
+<section class="lesson" id="l5">
+  <h2><span class="lnum">5</span> The Stop-Loss — <span class="muted" style="font-size:1rem">where you're wrong</span></h2>
+  <p>The most important lesson here. <b>Before you buy, you pick the price where you'll admit it failed and get out.</b> You decide it while calm, not while panicking.</p>
+  <p>It goes <b>just below the setup's key level</b> — the spot that, if broken, kills your reason for buying:</p>
+  <table>
+    <tr><th>Setup</th><th>Stop goes just below…</th></tr>
+    <tr><td>Pullback</td><td>the low of the dip</td></tr>
+    <tr><td>Base</td><td>the bottom of the box</td></tr>
+    <tr><td>Higher low</td><td>that higher low</td></tr>
+  </table>
+  <p><b>Real example — AMD:</b> entry ≈ $522, support ≈ $507, so the stop sits at <b>$505</b>. If AMD trades $505, the setup failed → you're out, no debate.</p>
+  <div class="key">⚙️ <b>Make it automatic:</b> on Robinhood, place a <b>stop order</b> at $505 the moment you buy. Now you're protected even while you're at work.<br><br>
+  🚫 <b>Iron rule:</b> never move a stop <i>down</i> to give a loser "more room." That's how a small loss becomes a disaster. You may only trail it <i>up</i> to lock in profit.</div>
+</section>
+
+<!-- LESSON 6 -->
+<section class="lesson" id="l6">
+  <h2><span class="lnum">6</span> Reward &amp; "R" — <span class="muted" style="font-size:1rem">why 2:1 is everything</span></h2>
+  <p>Meet <b>"R"</b>, your most useful word. <b>1R = the amount you risk on a trade.</b> For you that's about <b>$50</b> (1% of $5,000). Your <b>target</b> should be worth <b>at least 2R</b> — twice what you risk.</p>
+  <div class="formula">AMD: risk = $522 − $505 = <b>$17/share (1R)</b> &nbsp;→&nbsp; target $580 = +$58 = <b>~3.4R</b> ✅</div>
+  <h3>The math that proves you don't need to be right often</h3>
+  <p>Take 10 trades, risk 1R each, and <b>win only 4 of 10</b> (a losing record!). But winners pay 2R, losers cost 1R:</p>
+  <figure>
+    <svg id="rChart" viewBox="0 0 600 220" aria-label="R-multiple outcome chart"></svg>
+    <figcaption>4 wins × +2R = +8R · 6 losses × −1R = −6R · <b>Net = +2R</b> — profitable while wrong 60% of the time.</figcaption>
+  </figure>
+  <div class="key">💰 <b>The whole edge:</b> make your winners bigger than your losers (≥2:1) and the math carries you. Chasers do the opposite — tiny wins, big losses — and lose even when "right" most days. Where's the target? Usually the next obvious level: a prior high, round number, or "measured move."</div>
+</section>
+
+<div class="quiz" data-answer="1">
+  <div class="tag">Quick check</div>
+  <div class="q">You risk $50 to make $150 on a trade. What's the reward-to-risk?</div>
+  <button class="opt">1:3 — bad trade</button>
+  <button class="opt">3:1 — great, well above the 2:1 minimum</button>
+  <button class="opt">It doesn't matter as long as the stock is popular</button>
+  <div class="feedback"></div>
+</div>
+
+<!-- LESSON 7 -->
+<section class="lesson" id="l7">
+  <h2><span class="lnum">7</span> Position Sizing — <span class="muted" style="font-size:1rem">how many shares</span></h2>
+  <p>You never pick share count by gut. You <b>calculate</b> it from your risk:</p>
+  <div class="formula">Shares = (dollars you'll risk) ÷ (entry price − stop price)</div>
+  <p>On a small account you have <b>two caps</b> — and you always use whichever gives you <b>fewer</b> shares:</p>
+  <ul>
+    <li><b>Risk cap:</b> never risk more than 1R ($50).</li>
+    <li><b>Concentration cap:</b> never put more than ~15% of the account in one stock.</li>
+  </ul>
+  <p>For pricey stocks like AMD ($500+), the concentration cap usually wins, so you'll quietly risk <i>less</i> than 1% — that's good. <b>Fractional shares</b> (Robinhood has them) let you buy an exact dollar amount. Try it 👇</p>
+
+  <div class="calc">
+    <div class="row">
+      <label>Account size ($)<input id="cAcct" type="number" value="5000"></label>
+      <label>Risk per trade (%)<input id="cRisk" type="number" value="1"></label>
+      <label>Max per stock (%)<input id="cConc" type="number" value="15"></label>
+    </div>
+    <div class="row">
+      <label>Entry price ($)<input id="cEntry" type="number" value="522"></label>
+      <label>Stop price ($)<input id="cStop" type="number" value="505"></label>
+    </div>
+    <div class="out" id="cOut"></div>
+  </div>
+  <div class="key">🧮 Change the numbers — try a $50 stock with a $46 stop to see the <b>risk cap</b> win, then AMD ($522 / $505) to see the <b>concentration cap</b> win. Cheaper stocks ($30–150) usually let your full 1% risk work and are easier to size.</div>
+</section>
+
+<!-- LESSON 8 -->
+<section class="lesson" id="l8">
+  <h2><span class="lnum">8</span> Putting It Together — a full trade on real data</h2>
+  <p>This is your strategy's "research report," demystified. Here is the actual <b>AMD</b> plan we built this week, with the live data and news, walked through all 5 pillars:</p>
+  <figure>
+    <svg id="planChart" viewBox="0 0 600 320" aria-label="AMD trade plan chart"></svg>
+    <div class="legend"><span><span class="dot" style="background:#58a6ff"></span>entry $522</span><span><span class="dot" style="background:#f85149"></span>stop $505</span><span><span class="dot" style="background:#3fb950"></span>target $580</span></div>
+    <figcaption>AMD real candles + the trade plan. Risk $17/share down, reward $58/share up = ~3.4:1.</figcaption>
+  </figure>
+  <table>
+    <tr><th>Pillar</th><th>AMD answer</th></tr>
+    <tr><td>1 · What (strength)</td><td><span class="g">+162% in 3 mo, only 4% off highs</span> — a top leader</td></tr>
+    <tr><td>2 · When (setup)</td><td>Pullback / higher-low toward <b>$520–525</b> (don't chase the +5% news pop)</td></tr>
+    <tr><td>3 · Stop</td><td><b>$505</b> (below the June 16–17 support)</td></tr>
+    <tr><td>4 · Target</td><td><b>$580</b> (prior high $558, then extension). Reward ≈ 3.4R</td></tr>
+    <tr><td>5 · Size</td><td>~15% cap → ~$750 in fractional shares; real risk ≈ $24</td></tr>
+    <tr><td>News check ✅</td><td>Citi→Buy <b>$575</b>, Bernstein <b>$600</b>; AI/GPU deals (Rackspace, UK £2B, MEXT). No earnings due.</td></tr>
+    <tr><td>Confidence</td><td><b>8 / 10</b> → qualifies (rule needs ≥7)</td></tr>
+  </table>
+  <div class="key">📝 <b>The discipline:</b> if you can't fill in every row cleanly, you don't have a trade. A pretty chart with no catalyst (like PANW this week) scores ~6/10 → <b>NO TRADE</b>. When in doubt, the default is always: <b>do nothing.</b></div>
+</section>
+
+<!-- LESSON 9 -->
+<section class="lesson" id="l9">
+  <h2><span class="lnum">9</span> Mindset &amp; Your Game Plan</h2>
+  <p>This is what actually decides if you win. The mechanics are easy; following them is hard.</p>
+  <h3>The 5 habits that keep beginners alive</h3>
+  <ul class="clean">
+    <li><b>Risk the same small amount every time</b> (your 1R ≈ $50). Never "bet big" because you "feel sure."</li>
+    <li><b>Always use a stop, always set it first.</b> No exceptions.</li>
+    <li><b>Take the trade only if it scores ≥7/10.</b> Skipping bad trades IS a winning move — cash is a position.</li>
+    <li><b>Don't revenge-trade.</b> After a loss, the market doesn't owe you anything. Walk away.</li>
+    <li><b>Keep a journal:</b> screenshot the chart, write why you bought, your stop/target, and later — what happened. This is how you actually improve.</li>
+  </ul>
+  <h3>🚦 Your starter routine (fits your ~hourly schedule)</h3>
+  <ol>
+    <li><b>Evening (10 min):</b> check the market mood (SPY/QQQ up? VIX calm under 20?). Scan 1–2 leaders for a clean setup.</li>
+    <li><b>Write the plan:</b> entry, stop, target, size — using the calculator in Lesson 7.</li>
+    <li><b>Place orders that run themselves:</b> a limit buy at your pullback price + a stop-loss. Done.</li>
+    <li><b>One glance midday.</b> Otherwise, let it work.</li>
+  </ol>
+  <div class="key">🎓 <b>Most important next step: practice with FAKE money first.</b> "Paper trade" 10–20 setups — write the full plan, track results — before risking a real dollar. You'll learn the same lessons for free.</div>
+</section>
+
+<div class="quiz" data-answer="2">
+  <div class="tag">Final check</div>
+  <div class="q">A setup looks "kind of okay" but you can't find a catalyst and it scores 6/10. You should…</div>
+  <button class="opt">Buy it anyway — you're bored and want action</button>
+  <button class="opt">Buy double size to make up for last week's loss</button>
+  <button class="opt">Pass. NO TRADE is the default when the edge isn't clear</button>
+  <div class="feedback"></div>
+</div>
+
+<section class="done lesson">
+  <h2 style="justify-content:center">🎉 You finished the course</h2>
+  <p>You now understand the whole system: <b>buy leaders, on a pullback, with a stop, for ≥2:1, sized so one loss can't hurt you</b> — and skip everything that isn't clear.</p>
+  <p class="muted">Best next move: open a paper-trading habit and run 10 setups through the Lesson 7 calculator + the Lesson 8 checklist. When you're ready, I can scan live names with you and we'll fill out a research report together — no real orders without your say-so.</p>
+</section>
+
+<div class="disclaimer">
+  ⚠️ <b>Educational only — not financial advice.</b> This course teaches concepts using historical examples; it is not a recommendation to buy or sell any security. Trading stocks carries real risk, including loss of your entire investment. Past performance never guarantees future results. Prices shown are from June 2026 and are for learning only.
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ---------- REAL DATA (pulled this session) ---------- */
+// Relative strength, 3-month % change
+const RS = [
+  {t:"MRVL",v:249},{t:"ARM",v:221},{t:"AMD",v:162},{t:"MU",v:155},
+  {t:"PANW",v:70},{t:"TSM",v:37},{t:"ANET",v:27},{t:"SPY",v:15,mkt:true},
+  {t:"NOW",v:-15},{t:"PLTR",v:-17}
+];
+// AMD daily candles [date, open, high, low, close]
+const AMD = [
+ ["6/3",533.75,546.44,524.30,542.52],["6/4",514.75,532.19,499.87,523.20],
+ ["6/5",499.53,505.62,463.95,466.38],["6/8",485.00,494.97,477.71,490.33],
+ ["6/9",502.75,505.00,437.23,475.51],["6/10",467.97,477.45,448.33,452.40],
+ ["6/11",461.60,490.46,458.02,488.45],["6/12",499.69,521.71,494.00,511.57],
+ ["6/15",535.75,558.37,530.50,547.26],["6/16",546.89,548.95,507.25,507.29],
+ ["6/17",529.66,532.50,507.30,512.48],["6/18",531.58,539.69,526.32,537.37]
+];
+// PANW daily candles
+const PANW = [
+ ["6/3",285.00,288.00,275.85,280.43],["6/4",269.86,280.72,269.00,279.25],
+ ["6/5",278.99,280.64,269.40,272.05],["6/8",269.63,273.05,264.42,266.33],
+ ["6/9",265.30,266.44,251.15,260.52],["6/10",258.81,266.72,254.43,263.22],
+ ["6/11",261.00,279.95,258.10,279.53],["6/12",276.94,281.98,271.49,279.62],
+ ["6/15",280.55,285.12,274.33,284.54],["6/16",283.20,283.64,275.06,279.90],
+ ["6/17",279.46,284.32,276.71,282.13],["6/18",285.60,288.88,276.46,287.78]
+];
+const SVGNS="http://www.w3.org/2000/svg";
+function el(tag,attrs){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+/* ---------- RS BAR CHART ---------- */
+(function(){
+  const s=document.getElementById("rsChart");const W=600,H=320,padL=60,padR=20,padT=10,padB=20;
+  const max=260,min=-40,range=max-min;const bw=(W-padL-padR)/RS.length;
+  const y0=padT+(max/range)*(H-padT-padB);
+  s.appendChild(el("line",{x1:padL,y1:y0,x2:W-padR,y2:y0,stroke:"#9aa7b4","stroke-width":1}));
+  [200,100,0,-40].forEach(v=>{const y=padT+((max-v)/range)*(H-padT-padB);
+    s.appendChild(el("line",{x1:padL,y1:y,x2:W-padR,y2:y,stroke:"#2a3240","stroke-dasharray":"3"}));
+    const t=el("text",{x:padL-8,y:y+4,fill:"#9aa7b4","font-size":11,"text-anchor":"end"});t.textContent=v+"%";s.appendChild(t);});
+  RS.forEach((d,i)=>{const x=padL+i*bw+bw*0.15,w=bw*0.7;
+    const yv=padT+((max-d.v)/range)*(H-padT-padB);
+    const top=Math.min(yv,y0),h=Math.abs(yv-y0);
+    const col=d.mkt?"#58a6ff":(d.v>=15?"#3fb950":(d.v>=0?"#9aa7b4":"#f85149"));
+    s.appendChild(el("rect",{x,y:top,width:w,height:Math.max(h,1),fill:col,rx:2}));
+    const lab=el("text",{x:x+w/2,y:H-6,fill:"#9aa7b4","font-size":10,"text-anchor":"middle"});lab.textContent=d.t;s.appendChild(lab);
+    const val=el("text",{x:x+w/2,y:top-3,fill:col,"font-size":10,"text-anchor":"middle","font-weight":700});val.textContent=(d.v>0?"+":"")+d.v;s.appendChild(val);
+  });
+})();
+
+/* ---------- GENERIC CANDLE CHART ---------- */
+function candles(id,data,opts){
+  opts=opts||{};const s=document.getElementById(id);const W=600,H=300,padL=52,padR=14,padT=14,padB=24;
+  let hi=Math.max(...data.map(d=>d[2])),lo=Math.min(...data.map(d=>d[3]));
+  if(opts.lines)opts.lines.forEach(l=>{hi=Math.max(hi,l.v);lo=Math.min(lo,l.v);});
+  const pad=(hi-lo)*0.08;hi+=pad;lo-=pad;const range=hi-lo;
+  const yOf=v=>padT+((hi-v)/range)*(H-padT-padB);
+  const bw=(W-padL-padR)/data.length;
+  // gridlines
+  for(let g=0;g<=4;g++){const v=lo+range*g/4,y=yOf(v);
+    s.appendChild(el("line",{x1:padL,y1:y,x2:W-padR,y2:y,stroke:"#222b38","stroke-dasharray":"3"}));
+    const t=el("text",{x:padL-6,y:y+4,fill:"#9aa7b4","font-size":10,"text-anchor":"end"});t.textContent="$"+v.toFixed(0);s.appendChild(t);}
+  // optional horizontal plan lines
+  if(opts.lines)opts.lines.forEach(l=>{const y=yOf(l.v);
+    s.appendChild(el("line",{x1:padL,y1:y,x2:W-padR,y2:y,stroke:l.c,"stroke-width":1.6,"stroke-dasharray":"6 3"}));
+    const t=el("text",{x:W-padR,y:y-4,fill:l.c,"font-size":11,"text-anchor":"end","font-weight":700});t.textContent=l.label;s.appendChild(t);});
+  // optional box (base)
+  if(opts.box){const yT=yOf(opts.box.top),yB=yOf(opts.box.bot),x0=padL+opts.box.from*bw;
+    s.appendChild(el("rect",{x:x0,y:yT,width:(opts.box.to-opts.box.from)*bw,height:yB-yT,fill:"rgba(154,167,180,.07)",stroke:"#9aa7b4","stroke-dasharray":"4","stroke-width":1.3}));
+    const t=el("text",{x:x0+4,y:yT-4,fill:"#9aa7b4","font-size":10});t.textContent=opts.box.label||"";s.appendChild(t);}
+  // candles
+  data.forEach((d,i)=>{const[dt,o,h,l,c]=d;const cx=padL+i*bw+bw/2;
+    const up=c>=o,col=up?"#3fb950":"#f85149";
+    s.appendChild(el("line",{x1:cx,y1:yOf(h),x2:cx,y2:yOf(l),stroke:col,"stroke-width":1.4}));
+    const bt=yOf(Math.max(o,c)),bb=yOf(Math.min(o,c));
+    s.appendChild(el("rect",{x:cx-bw*0.3,y:bt,width:bw*0.6,height:Math.max(bb-bt,1.5),fill:col,rx:1}));
+    if(i%2===0||i===data.length-1){const t=el("text",{x:cx,y:H-7,fill:"#9aa7b4","font-size":9,"text-anchor":"middle"});t.textContent=dt;s.appendChild(t);}
+  });
+}
+candles("amdChart",AMD,{lines:[{v:507,c:"#9aa7b4",label:"support ~507"}]});
+candles("panwChart",PANW,{box:{top:288,bot:260,from:0,to:11,label:"base ~260–288"}});
+candles("planChart",AMD,{lines:[
+  {v:522,c:"#58a6ff",label:"BUY zone 522"},
+  {v:505,c:"#f85149",label:"STOP 505"},
+  {v:580,c:"#3fb950",label:"TARGET 580"}
+]});
+
+/* ---------- R-MULTIPLE CHART ---------- */
+(function(){
+  const s=document.getElementById("rChart");const W=600,H=220,padL=40,padB=40,padT=14;
+  const trades=[2,-1,-1,2,-1,2,-1,-1,2,-1]; // 4 wins (+2R), 6 losses (-1R)
+  const bw=(W-padL-14)/trades.length;const maxR=2.4;const zero=padT+(maxR/(maxR*2))*(H-padT-padB);
+  s.appendChild(el("line",{x1:padL,y1:zero,x2:W-14,y2:zero,stroke:"#9aa7b4"}));
+  const scale=(H-padT-padB)/(maxR*2);
+  trades.forEach((r,i)=>{const x=padL+i*bw+bw*0.18,w=bw*0.64;const h=Math.abs(r)*scale;
+    const y=r>0?zero-h:zero;const col=r>0?"#3fb950":"#f85149";
+    s.appendChild(el("rect",{x,y,width:w,height:h,fill:col,rx:2}));
+    const t=el("text",{x:x+w/2,y:r>0?y-4:y+h+13,fill:col,"font-size":11,"text-anchor":"middle","font-weight":700});t.textContent=(r>0?"+":"")+r+"R";s.appendChild(t);
+  });
+  const net=el("text",{x:W-16,y:padT+10,fill:"#e3b341","font-size":14,"text-anchor":"end","font-weight":700});net.textContent="Net = +2R ✅";s.appendChild(net);
+})();
+
+/* ---------- QUIZZES ---------- */
+document.querySelectorAll(".quiz").forEach(q=>{
+  const ans=+q.dataset.answer;const opts=[...q.querySelectorAll(".opt")];const fb=q.querySelector(".feedback");
+  opts.forEach((o,i)=>o.addEventListener("click",()=>{
+    opts.forEach(b=>{b.disabled=true;});
+    opts[ans].classList.add("correct");
+    if(i!==ans)o.classList.add("wrong");
+    fb.classList.add("show",i===ans?"ok":"no");
+    fb.textContent=i===ans?"✅ Correct! "+(q.dataset.note||"Nice — that's the core idea."):"❌ Not quite — the highlighted answer is right. Re-read the lesson above.";
+  }));
+});
+
+/* ---------- POSITION CALCULATOR ---------- */
+function calc(){
+  const acct=+cAcct.value,risk=+cRisk.value,conc=+cConc.value,entry=+cEntry.value,stop=+cStop.value;
+  const out=document.getElementById("cOut");
+  if(!(acct>0&&entry>stop&&stop>0)){out.innerHTML="<span class='r'>Enter a valid entry &gt; stop.</span>";return;}
+  const riskDollars=acct*risk/100;const rps=entry-stop;
+  const sharesByRisk=riskDollars/rps;const posByRisk=sharesByRisk*entry;
+  const concDollars=acct*conc/100;const sharesByConc=concDollars/entry;
+  const concBinds=sharesByConc<sharesByRisk;
+  const shares=Math.min(sharesByRisk,sharesByConc);
+  const pos=shares*entry;const actualRisk=shares*rps;
+  out.innerHTML=
+   "Your 1R (max risk): <b>$"+riskDollars.toFixed(0)+"</b> &nbsp;·&nbsp; Risk per share: <b>$"+rps.toFixed(2)+"</b><br><br>"+
+   "• Risk cap allows: <b>"+sharesByRisk.toFixed(2)+"</b> shares ($"+posByRisk.toFixed(0)+")<br>"+
+   "• Concentration cap allows: <b>"+sharesByConc.toFixed(2)+"</b> shares ($"+concDollars.toFixed(0)+")<br><br>"+
+   "<span class='pill "+(concBinds?'gold':'green')+"'>"+(concBinds?'Concentration cap wins':'Risk cap wins')+"</span><br><br>"+
+   "👉 <b>Buy ≈ "+shares.toFixed(2)+" shares</b> (≈ $"+pos.toFixed(0)+", "+(pos/acct*100).toFixed(1)+"% of account)<br>"+
+   "Real risk if stopped: <b>$"+actualRisk.toFixed(0)+"</b> ("+(actualRisk/acct*100).toFixed(2)+"% of account)";
+}
+["cAcct","cRisk","cConc","cEntry","cStop"].forEach(id=>document.getElementById(id).addEventListener("input",calc));
+calc();
+
+/* ---------- PROGRESS BAR ---------- */
+const pb=document.getElementById("progressbar");
+addEventListener("scroll",()=>{const h=document.documentElement;const p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;pb.style.width=p+"%";});
+</script>
+</body>
+</html>
